@@ -125,8 +125,19 @@ jobs:
           cache: true
 
       # ==========================================================
+      # 🔐 DECODE KEYSTORE (TAMBAHAN BARU)
+      # ==========================================================
+      - name: Decode Keystore
+        working-directory: ${{ env.PROJECT_DIR }}
+        run: |
+          echo "=== Decoding Keystore ==="
+          mkdir -p android/app
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > android/app/release-key.jks
+          echo "✅ Keystore decoded successfully"
+          ls -lh android/app/release-key.jks
+
+      # ==========================================================
       # 🔍 TAHAP ANALYZE — STEP 1: Jalankan & cetak hasil
-      # (Dipisah dari exit 1 biar log tidak ter-truncate)
       # ==========================================================
       - name: Analyze Project Code
         working-directory: ${{ env.PROJECT_DIR }}
@@ -153,7 +164,6 @@ jobs:
 
       # ==========================================================
       # 🔍 TAHAP ANALYZE — STEP 2: Stop workflow jika only_analyze
-      # (Dipisah biar log step di atas sudah ter-commit ke GitHub)
       # ==========================================================
       - name: Stop if Analyze Only
         if: ${{ github.event.inputs.only_analyze == 'true' }}
@@ -185,6 +195,11 @@ jobs:
       # ==========================================================
       - name: Build APK
         working-directory: ${{ env.PROJECT_DIR }}
+        env:
+          KEYSTORE_PATH: android/app/release-key.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           echo "=== Building APK ==="
           echo "Mode: ${{ github.event.inputs.build_type }}"
