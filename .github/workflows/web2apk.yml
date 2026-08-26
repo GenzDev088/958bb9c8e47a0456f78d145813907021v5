@@ -571,7 +571,7 @@ jobs:
                     await SystemNavigator.pop();
                   }
                 },
-                child: const Scaffold(
+                child: Scaffold(
                   // No SafeArea here. Edge-to-edge lets WebView occupy
                   // the complete available display area.
                   body: WebViewWidget(
@@ -635,7 +635,7 @@ jobs:
           sudo apt-get install -y imagemagick
 
           curl -L \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
             -H "Accept: application/octet-stream" \
             "${{ github.event.inputs.icon_url }}" \
             -o myapp/assets/icon/icon_raw
